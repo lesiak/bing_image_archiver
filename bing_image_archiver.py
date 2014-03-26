@@ -7,7 +7,7 @@ import urllib
 import utils
 
 from iorise_image_extractor import extract_all_image_urls
-
+from duplicate_remover import remove_duplicate_images
 
 def update_image_library(download_location):
     """ Function used to update the specified location with all the new images posted on the iorise blog. It uses the
@@ -32,6 +32,8 @@ def update_image_library(download_location):
     with open(log_file_location, 'wb') as handle:
         pickle.dump(current_date, handle)
 
+    remove_duplicate_images(download_location, (1920, 1200))
+
 
 def download_images(from_date, to_date, download_location):
     """ Function downloading to the specified folder all bing images published on the iorise blog between the
@@ -45,7 +47,7 @@ def download_images(from_date, to_date, download_location):
 
         image_urls = extract_all_image_urls(current_date)
 
-        print(str(current_date) + ": " + str(len(image_urls)))
+        print(str(current_date) + ": " + str(len(image_urls)) + " images")
 
         for image_url in image_urls:
 
