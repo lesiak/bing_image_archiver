@@ -67,7 +67,7 @@ class BlogDayPageParser(HTMLParser):
         self.result_list = result_list
 
         # Regex used to validate the href attribute of a tags
-        self.href_chk = re.compile('^http://www[.]iorise[.]com/blog/[?]attachment_id=[0-9]+$')
+        self.href_chk = re.compile('^http://www[.]iorise[.]com/(blog/)?[?]attachment_id=[0-9]+$')
         self.rel_chk = re.compile('^attachment wp-att-[0-9]+$')
 
     def handle_starttag(self, tag, attrs):
