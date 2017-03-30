@@ -1,5 +1,6 @@
 import re
-import urllib
+import urllib.request
+import logging
 
 from html.parser import HTMLParser
 
@@ -7,6 +8,9 @@ from html.parser import HTMLParser
 class BlogAttachmentPageParser(HTMLParser):
     """HTMLParser used to extract the url of Bing images from a Blog Post Attachment Page from www.iorise.com
     (e.g.: http://www.iorise.com/blog/?attachment_id=44)"""
+
+    def error(self, message):
+        print(message)
 
     def __init__(self, result_list):
         """ Constructor: Initialize parser. """
@@ -114,8 +118,10 @@ def extract_all_image_urls(date_to_extract):
                                                                     day=date_to_extract.day)
 
     try:
-        page = urllib.urlopen(url)
-    except:
+        logging.debug(f"Fetching page {url}")
+        page = urllib.request.urlopen(url)
+    except Exception as e:
+        logging.warning(f"Could not fetch page {url}")
         return []
 
     # Extract attachment pages from day page

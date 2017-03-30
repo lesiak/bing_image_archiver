@@ -5,6 +5,7 @@ import sys
 import time
 import urllib
 import utils
+import logging
 
 from iorise_image_extractor import extract_all_image_urls
 from duplicate_remover import remove_duplicate_images
@@ -70,7 +71,7 @@ if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Wrong number of arguments. Usage: python bing_image_downloader.py destination_folder")
         quit()
-
+    logging.basicConfig(level=logging.DEBUG)
     path = sys.argv[1]
 
     if not os.path.isdir(path):
