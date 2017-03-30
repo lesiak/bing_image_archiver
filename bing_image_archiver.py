@@ -3,12 +3,13 @@ import os
 import pickle
 import sys
 import time
-import urllib
+import urllib.request
 import utils
 import logging
 
 from iorise_image_extractor import extract_all_image_urls
 from duplicate_remover import remove_duplicate_images
+
 
 def update_image_library(download_location):
     """ Function used to update the specified location with all the new images posted on the iorise blog. It uses the
@@ -19,7 +20,7 @@ def update_image_library(download_location):
 
     # Get last date scanned
     log_file_location = utils.get_log_file_path(download_location)
-    last_date_scanned = datetime.date(2012, 11, 25)
+    last_date_scanned = datetime.date(2017, 1, 25)
     try:
         with open(log_file_location, 'rb') as handle:
             last_date_scanned = pickle.load(handle)
@@ -55,9 +56,8 @@ def download_images(from_date, to_date, download_location):
             filename = utils.extract_filename_from_url(image_url)
             full_filename = os.path.join(download_location, filename)
 
-            if not os.path.isfile(full_filename):
-                urllib.urlretrieve(image_url, full_filename)
-                time.sleep(1)
+            download_image(image_url, download_location)
+
 
         with open(log_file_location, 'wb') as handle:
             pickle.dump(current_date, handle)
@@ -65,6 +65,15 @@ def download_images(from_date, to_date, download_location):
         current_date += datetime.timedelta(1)
 
 
+def download_image(image_url, download_location):
+    filename = utils.extract_filename_from_url(image_url)
+    full_filename = os.path.join(download_location, filename)
+
+    if not os.path.isfile(full_filename):
+
+        urllib.request.urlretrieve(image_url, full_filename)
+        logging.debug(f"Saved {full_filename}")
+        
 
 if __name__ == "__main__":
 
