@@ -133,18 +133,20 @@ def extract_all_image_urls(date_to_extract):
 
     # For each attachment page, extract the image urls
     for page_url in attachment_pages_url:
-
-        try:
-            attachment_page = urllib.urlopen(page_url)
-        except:
-            continue
-
-        image_urls = []
-        parser = BlogAttachmentPageParser(image_urls)
-        parser.feed(attachment_page.read().decode('UTF-8'))
-
+        image_urls = extract_urls_from_page_with_urls(page_url)
         all_image_urls += image_urls
 
     return all_image_urls
 
 
+def extract_urls_from_page_with_urls(page_url):
+    try:
+        attachment_page = urllib.request.urlopen(page_url)
+    except urllib.request.HTTPError as e:
+        logging.error(f"Could not fetch page {page_url} e")
+        return []
+
+    image_urls = []
+    parser = BlogAttachmentPageParser(image_urls)
+    parser.feed(attachment_page.read().decode('UTF-8'))
+    return image_urls
