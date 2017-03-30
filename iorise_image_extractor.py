@@ -1,7 +1,7 @@
 import re
 import urllib
 
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 
 
 class BlogAttachmentPageParser(HTMLParser):
