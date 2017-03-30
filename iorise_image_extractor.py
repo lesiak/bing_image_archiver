@@ -117,6 +117,10 @@ def extract_all_image_urls(date_to_extract):
                                                                     month=date_to_extract.month,
                                                                     day=date_to_extract.day)
 
+    new_format = True
+    if new_format:
+        return extract_urls_from_page_with_urls(url)
+
     try:
         logging.debug(f"Fetching page {url}")
         page = urllib.request.urlopen(url)
