@@ -5,12 +5,9 @@ import logging
 from html.parser import HTMLParser
 
 
-class BlogAttachmentPageParser(HTMLParser):
+class ImageUrlsExtractingParser(HTMLParser):
     """HTMLParser used to extract the url of Bing images from a Blog Post Attachment Page from www.iorise.com
     (e.g.: http://www.iorise.com/blog/?attachment_id=44)"""
-
-    def error(self, message):
-        print(message)
 
     def __init__(self, result_list):
         """ Constructor: Initialize parser. """
@@ -58,8 +55,11 @@ class BlogAttachmentPageParser(HTMLParser):
 
         return href_ok
 
+    def error(self, message):
+        print(message)
 
-class BlogDayPageParser(HTMLParser):
+
+class AttachmentPageExtractingParser(HTMLParser):
     """HTMLParser used to extract the url of attachment page containing the Bing images from a Day Page from
     www.iorise.com (e.g.: http://www.iorise.com/blog/?m=20121125)"""
 
@@ -109,6 +109,9 @@ class BlogDayPageParser(HTMLParser):
 
         return href_ok and rel_ok
 
+    def error(self, message):
+        print(message)
+
 
 def extract_all_image_urls(date_to_extract):
     """ Function used to extract all Bing images of the day published on iorise between the two provided dates. """
@@ -123,15 +126,15 @@ def extract_all_image_urls(date_to_extract):
 
     try:
         logging.debug(f"Fetching page {url}")
-        page = urllib.request.urlopen(url)
+        page_resp = urllib.request.urlopen(url)
     except Exception as e:
         logging.warning(f"Could not fetch page {url}")
         return []
 
     # Extract attachment pages from day page
     attachment_pages_url = []
-    day_page_parser = BlogDayPageParser(attachment_pages_url)
-    day_page_parser.feed(page.read().decode('UTF-8'))
+    day_page_parser = AttachmentPageExtractingParser(attachment_pages_url)
+    day_page_parser.feed(page_resp.read().decode('UTF-8'))
 
     all_image_urls = []
 
@@ -145,12 +148,12 @@ def extract_all_image_urls(date_to_extract):
 
 def extract_urls_from_page_with_urls(page_url):
     try:
-        attachment_page = urllib.request.urlopen(page_url)
+        attachment_page_resp = urllib.request.urlopen(page_url)
     except urllib.request.HTTPError as e:
-        logging.error(f"Could not fetch page {page_url} e")
+        logging.error(f"Could not fetch page {page_url} {e}")
         return []
 
     image_urls = []
-    parser = BlogAttachmentPageParser(image_urls)
-    parser.feed(attachment_page.read().decode('UTF-8'))
+    parser = ImageUrlsExtractingParser(image_urls)
+    parser.feed(attachment_page_resp.read().decode('UTF-8'))
     return image_urls
