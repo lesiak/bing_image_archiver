@@ -1,3 +1,4 @@
+import datetime
 import re
 import urllib.request
 import logging
@@ -120,30 +121,39 @@ def extract_all_image_urls(date_to_extract):
                                                                     month=date_to_extract.month,
                                                                     day=date_to_extract.day)
 
-    new_format = True
+    new_format = has_urls_in_page(date_to_extract)
     if new_format:
         return extract_urls_from_page_with_urls(url)
 
-    try:
-        logging.debug(f"Fetching page {url}")
-        page_resp = urllib.request.urlopen(url)
-    except Exception as e:
-        logging.warning(f"Could not fetch page {url}")
-        return []
-
-    # Extract attachment pages from day page
-    attachment_pages_url = []
-    day_page_parser = AttachmentPageExtractingParser(attachment_pages_url)
-    day_page_parser.feed(page_resp.read().decode('UTF-8'))
+    attachment_pages_urls = extract_attachment_pages_urls(url)
 
     all_image_urls = []
-
     # For each attachment page, extract the image urls
-    for page_url in attachment_pages_url:
+    for page_url in attachment_pages_urls:
         image_urls = extract_urls_from_page_with_urls(page_url)
         all_image_urls += image_urls
 
     return all_image_urls
+
+
+def has_urls_in_page(date_to_extract):
+    new_format_change_date = datetime.date(2014, 10, 8)
+    return date_to_extract >= new_format_change_date
+
+
+def extract_attachment_pages_urls(url):
+    try:
+        logging.debug(f"Fetching page {url}")
+        page_resp = urllib.request.urlopen(url)
+    except urllib.request.HTTPError as e:
+        logging.warning(f"Could not fetch page {url} {e}")
+        return []
+
+        # Extract attachment pages from day page
+    attachment_pages_urls = []
+    day_page_parser = AttachmentPageExtractingParser(attachment_pages_urls)
+    day_page_parser.feed(page_resp.read().decode('UTF-8'))
+    return attachment_pages_urls
 
 
 def extract_urls_from_page_with_urls(page_url):

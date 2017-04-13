@@ -1,15 +1,14 @@
 import datetime
+import logging
 import os
 import pickle
 import sys
-import time
 import urllib.request
-import utils
-import logging
 from multiprocessing.dummy import Pool
 
-from iorise_image_extractor import extract_all_image_urls
+import utils
 from duplicate_remover import remove_duplicate_images
+from iorise_image_extractor import extract_all_image_urls
 
 
 def update_image_library(download_location):
@@ -21,7 +20,7 @@ def update_image_library(download_location):
 
     # Get last date scanned
     log_file_location = utils.get_log_file_path(download_location)
-    last_date_scanned = datetime.date(2017, 1, 1)
+    last_date_scanned = datetime.date(2012, 11, 25)
     try:
         with open(log_file_location, 'rb') as handle:
             last_date_scanned = pickle.load(handle)
